@@ -1,0 +1,11 @@
+{
+	"scripts": {
+		"test-unit": "vitest -c vitest.unit.config.ts"
+	},
+	"devDependencies": {
+		"@types/node": "^20.8.3",
+		"typescript": "^5.2.2",
+		"vite": "^4.4.11",
+		"vitest": "^0.34.6"
+	}
+}
