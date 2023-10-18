@@ -57,10 +57,11 @@ function createRef(rawValue: unknown, shallow: boolean) {
 }
 
 class RefImpl<T> {
-  private _value: T;
-  private _rawValue: T;
+  private _value: T; // value 内部存储变量
+  private _rawValue: T; // 传入的源 target； 可以为任意类型
 
-  public readonly __v_isRef = true;
+  public dep?: Dep = undefined; // 存放依赖当前 RefImpl 实例的 Effects；
+  public readonly __v_isRef = true; // ref 标志位
 
   constructor(value: T, public readonly __v_isShallow: boolean) {
     this._rawValue = __v_isShallow ? value : toRaw(value);
@@ -68,6 +69,7 @@ class RefImpl<T> {
   }
 
   get value() {
+    trackRefValue(this);
     return this._value;
   }
 
@@ -78,10 +80,12 @@ class RefImpl<T> {
     if (hasChanged(newVal, this._rawValue)) {
       this._rawValue = newVal;
       this._value = useDirectValue ? newVal : toReactive(newVal);
+      triggerRefValue(this, newVal);
     }
   }
 }
 
+// 触发 dep 收集的 effect
 export function triggerRefValue(ref: RefBase<any>, newVal?: any) {
   ref = toRaw(ref);
   const dep = ref.dep;
@@ -90,9 +94,13 @@ export function triggerRefValue(ref: RefBase<any>, newVal?: any) {
   }
 }
 
+// 收集依赖 ref 值的 effect 到 dep 中
 export function trackRefValue(ref: RefBase<any>) {
   if (shouldTrack && activeEffect) {
+    // 如果 有 shouldTrack 和 activeEffect
+    // 说明当前有 effect 依赖 ref。即有 effect 在执行 ReactiveEffect run 方法。
     ref = toRaw(ref);
+    // ref.dep 首次收集时为空，再次收集时不为空
     trackEffects(ref.dep || (ref.dep = createDep()));
   }
 }
