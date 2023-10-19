@@ -68,7 +68,7 @@ export class ComputedRefImpl<T> {
   public readonly __v_isRef = true;
   public readonly [ReactiveFlags.IS_READONLY]: boolean = false;
 
-  public _dirty = true;
+  public _dirty = true; // 是否重新计算标记
   public _cacheable: boolean;
 
   constructor(
@@ -77,7 +77,12 @@ export class ComputedRefImpl<T> {
     isReadonly: boolean,
     isSSR: boolean
   ) {
+    // 每个 computed 在创建时，会创建 ReactiveEffect，即 computed 值会与依赖的值生成 effect 关系。
+    // 然后在 读 computed 值的时候，会进入 get value 方法中，首次获取时 dirty 为 true,会调用当前
+    // computed 的 effect 对象的 run 方法进入收集依赖，
     this.effect = new ReactiveEffect(getter, () => {
+      // 当前回调是 effect 的 scheduler 函数
+      // 只有当 getter 方法所依赖的响应式对象发生变化时才会执行。
       if (!this._dirty) {
         this._dirty = true;
         triggerRefValue(this);
@@ -92,7 +97,8 @@ export class ComputedRefImpl<T> {
     const self = toRaw(this);
     trackRefValue(self);
     if (self._dirty || !self._cacheable) {
-      self._dirty = false;
+      // 需要依赖的值发生变化或者是 SSR 时会重新计算，否则直接返回上一次计算的值
+      self._dirty = false; // 计算后会将 dirty 设置为 false，用来缓存当前值
       self._value = self.effect.run()!;
     }
     return self._value;
