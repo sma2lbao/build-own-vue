@@ -1,6 +1,6 @@
-## Reactive 解析
+## reactive 解析
 
-### Reactive 测试用例
+### reactive 测试用例
 
 ```typescript
 describe("reactivity/reactive", () => {

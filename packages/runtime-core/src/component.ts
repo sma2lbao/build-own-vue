@@ -1,6 +1,13 @@
 import { ComputedOptions, MethodOptions } from "./component-options";
+import { VNode } from "./vnode";
 
 export type Data = Record<string, unknown>;
+
+export interface ComponentInternalInstance {
+  uid: number;
+  vnode: VNode;
+  [key: string]: any;
+}
 
 export type Component<
   Props = any,

@@ -7,6 +7,13 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@ovue/reactivity':
+        specifier: workspace:^
+        version: link:packages/reactivity
+      '@ovue/shared':
+        specifier: workspace:^
+        version: link:packages/shared
     devDependencies:
       '@types/node':
         specifier: ^20.8.3

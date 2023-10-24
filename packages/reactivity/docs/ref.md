@@ -1,6 +1,6 @@
-## Ref 解析
+## ref 解析
 
-### Ref 测试用例
+### ref 测试用例
 
 通过测试用例可以清楚知道，ref 是用来解决 reactive 不支持基础类型的响应式的问题。
 
@@ -23,7 +23,7 @@ it("should be reactive", () => {
 });
 ```
 
-### Ref 大体逻辑
+### ref 大体逻辑
 
 - 通过阅读 reactivity/src/ref.ts 的源码，大体流程较为清晰，ref 主要返回了 RefImpl 实例对象。
 

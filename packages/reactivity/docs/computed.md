@@ -1,6 +1,6 @@
-## Computed 解析
+## computed 解析
 
-### Computed 测试用例
+### computed 测试用例
 
 ```typescript
 it("should compute lazily", () => {

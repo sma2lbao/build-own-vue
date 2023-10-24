@@ -71,6 +71,7 @@ export class ReactiveEffect<T = any> {
 
   onStop?: () => void;
 
+  // public、private、protected、readonly修饰符，都会自动声明对应修饰符的实例属性
   constructor(
     public fn: () => T,
     public scheduler: EffectScheduler | null = null,
