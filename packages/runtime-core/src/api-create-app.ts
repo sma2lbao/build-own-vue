@@ -71,3 +71,27 @@ export type CreateAppFunction<HostElement> = (
   rootComponent: Component,
   rootProps?: Data | null
 ) => App<HostElement>;
+
+export interface AppContext {
+  app: App;
+  config: AppConfig;
+  mixins: ComponentOptions[];
+  components: Record<string, Component>;
+  directives: Record<string, Directive>;
+  provides: Record<string | symbol, any>;
+
+  optionsCache: WeakMap<ComponentOptions, MergedComponentOptions>;
+
+  // TODO
+
+  /**
+   * HMR only
+   * @internal
+   */
+  reload?: () => void;
+
+  /**
+   * v2 compat only
+   */
+  filters?: Record<string, Function>;
+}

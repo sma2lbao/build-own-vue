@@ -36,6 +36,9 @@ export const isFunction = (value: unknown): value is Function => {
 export const isMap = (val: unknown): val is Map<any, any> =>
   toTypeString(val) === "[object Map]";
 
+export const isSet = (val: unknown): val is Set<any> =>
+  toTypeString(val) === "[object Set]";
+
 export const isArray = Array.isArray;
 
 export const isIntegerKey = (key: unknown) => {
@@ -46,3 +49,10 @@ export const isIntegerKey = (key: unknown) => {
     "" + parseInt(key, 10) === key
   );
 };
+
+export const isPlainObject = (val: unknown): val is object =>
+  toTypeString(val) === "[object Object]";
+
+const onRE = /^on[^a-z]/;
+
+export const isOn = (key: string) => onRE.test(key);

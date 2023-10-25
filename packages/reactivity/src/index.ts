@@ -1,4 +1,10 @@
-export { ReactiveFlags, isReactive, toReactive, reactive } from "./reactive";
+export {
+  ReactiveFlags,
+  isReactive,
+  toReactive,
+  reactive,
+  isProxy,
+} from "./reactive";
 
 export { type Ref, isRef } from "./ref";
 
