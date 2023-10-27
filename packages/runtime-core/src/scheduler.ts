@@ -1,4 +1,4 @@
-import { NOOP, isArray } from "@ovue/shared";
+import { NOOP, isArray, Awaited } from "@ovue/shared";
 import { ComponentInternalInstance } from "./component";
 
 export interface SchedulerJob extends Function {

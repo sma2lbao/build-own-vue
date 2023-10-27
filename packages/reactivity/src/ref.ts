@@ -104,3 +104,13 @@ export function trackRefValue(ref: RefBase<any>) {
     trackEffects(ref.dep || (ref.dep = createDep()));
   }
 }
+
+export type ShallowUnwrapRef<T> = {
+  [K in keyof T]: T[K] extends Ref<infer V>
+    ? V // if `V` is `unknown` that means it does not extend `Ref` and is undefined
+    : T[K] extends Ref<infer V> | undefined
+    ? unknown extends V
+      ? undefined
+      : V | undefined
+    : T[K];
+};

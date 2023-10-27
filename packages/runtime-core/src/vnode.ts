@@ -78,6 +78,7 @@ export interface VNode<
   dirs: DirectiveBinding[] | null;
   // transition: TransitionHooks<HostElement> | null;
 
+  // 原生节点
   el: HostNode | null;
   anchor: HostNode | null;
   target: HostElement | null;
@@ -392,4 +393,8 @@ export function mergeProps(...args: (Data & VNodeProps)[]) {
   }
 
   return ret;
+}
+
+export function isSameVNodeType(n1: VNode, n2: VNode): boolean {
+  return n1.type === n2.type && n1.key === n2.key;
 }

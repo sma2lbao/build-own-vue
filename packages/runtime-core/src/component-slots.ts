@@ -1,3 +1,4 @@
+import { Prettify } from "@ovue/shared";
 import { ComponentInternalInstance } from "./component";
 
 declare const SlotSymbol: unique symbol;
@@ -25,3 +26,16 @@ export type RawSlots = {
    */
   _?: SlotFlags;
 };
+
+export type UnwrapSlotsType<
+  S extends SlotsType,
+  T = NonNullable<S[typeof SlotSymbol]>
+> = [keyof S] extends [never]
+  ? Slots
+  : Readonly<
+      Prettify<{
+        [K in keyof T]: NonNullable<T[K]> extends (...args: any[]) => any
+          ? T[K]
+          : Slot<T[K]>;
+      }>
+    >;

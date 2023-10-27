@@ -56,3 +56,22 @@ export const isPlainObject = (val: unknown): val is object =>
 const onRE = /^on[^a-z]/;
 
 export const isOn = (key: string) => onRE.test(key);
+
+export const NO = () => false;
+
+let _globalThis: any;
+export const getGlobalThis = (): any => {
+  return (
+    _globalThis ||
+    (_globalThis =
+      typeof globalThis !== "undefined"
+        ? globalThis
+        : typeof self !== "undefined"
+        ? self
+        : typeof window !== "undefined"
+        ? window
+        : typeof global !== "undefined"
+        ? global
+        : {})
+  );
+};
