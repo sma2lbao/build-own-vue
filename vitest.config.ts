@@ -1,5 +1,5 @@
 import { configDefaults, defineConfig, UserConfig } from "vitest/config";
-import { entries } from "./scripts/aliases.js";
+// import { entries } from "./scripts/aliases.js";
 
 export default defineConfig({
   define: {
@@ -18,7 +18,7 @@ export default defineConfig({
     __COMPAT__: true,
   },
   resolve: {
-    alias: entries,
+    // alias: entries,
   },
   test: {
     globals: true,
@@ -26,7 +26,7 @@ export default defineConfig({
     threads: !process.env.GITHUB_ACTIONS,
     setupFiles: "scripts/setup-vitest.ts",
     environmentMatchGlobs: [
-      ["packages/{vue,vue-compat,runtime-dom}/**", "jsdom"],
+      // ["packages/{vue,vue-compat,runtime-dom}/**", "jsdom"],
     ],
     sequence: {
       hooks: "list",

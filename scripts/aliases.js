@@ -13,10 +13,10 @@ const resolveEntryForPkg = (p) =>
 const dirs = readdirSync(new URL("../packages", import.meta.url));
 
 const entries = {
-  vue: resolveEntryForPkg("vue"),
-  "vue/compiler-sfc": resolveEntryForPkg("compiler-sfc"),
-  "vue/server-renderer": resolveEntryForPkg("server-renderer"),
-  "@vue/compat": resolveEntryForPkg("vue-compat"),
+  // vue: resolveEntryForPkg("vue"),
+  // "vue/compiler-sfc": resolveEntryForPkg("compiler-sfc"),
+  // "vue/server-renderer": resolveEntryForPkg("server-renderer"),
+  // "@vue/compat": resolveEntryForPkg("vue-compat"),
 };
 
 const nonSrcPackages = ["sfc-playground", "template-explorer", "dts-test"];
