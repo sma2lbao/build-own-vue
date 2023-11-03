@@ -3,11 +3,11 @@ import { patchProp } from "./patch-prop";
 import { serializeInner } from "./serialize";
 import { extend } from "@ovue/shared";
 import {
-  createRenderer,
-  VNode,
-  RootRenderFunction,
   CreateAppFunction,
-} from "vue";
+  createRenderer,
+  RootRenderFunction,
+  VNode,
+} from "@ovue/runtime-core";
 
 const { render: baseRender, createApp: baseCreateApp } = createRenderer(
   extend({ patchProp }, nodeOps)
@@ -26,4 +26,3 @@ export function renderToString(vnode: VNode) {
 export * from "./trigger-event";
 export * from "./serialize";
 export * from "./node-ops";
-export { h } from "vue";

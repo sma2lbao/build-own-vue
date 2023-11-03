@@ -16,5 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "vue": "3.3.4"
+  },
+  "devDependencies": {
+    "@ovue/runtime-core": "workspace:^"
   }
 }

@@ -47,6 +47,10 @@ importers:
       vue:
         specifier: 3.3.4
         version: 3.3.4
+    devDependencies:
+      '@ovue/runtime-core':
+        specifier: workspace:^
+        version: link:../runtime-core
 
   packages/shared: {}
 

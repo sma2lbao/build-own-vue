@@ -1,10 +1,10 @@
 import {
-  h,
   render,
   nodeOps,
   TestElement,
   serializeInner as inner,
 } from "@ovue/runtime-test";
+import { h } from "../src/h";
 
 describe("renderer: element", () => {
   let root: TestElement;
