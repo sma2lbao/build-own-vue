@@ -2,6 +2,10 @@ import { ReactiveEffect } from "./effect";
 
 let activeEffectScope: EffectScope | undefined;
 
+export function getCurrentScope() {
+  return activeEffectScope;
+}
+
 export function recordEffectScope(
   effect: ReactiveEffect,
   scope: EffectScope | undefined = activeEffectScope

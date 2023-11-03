@@ -4,6 +4,7 @@ export {
   toReactive,
   reactive,
   isProxy,
+  toRaw,
   type UnwrapNestedRefs,
 } from "./reactive";
 
@@ -13,7 +14,12 @@ export {
   type DebuggerOptions,
   type EffectScheduler,
   ReactiveEffect,
+  trigger,
+  pauseTracking,
+  resetTracking,
 } from "./effect";
+
+export { getCurrentScope } from "./effect-scope";
 
 export {
   type WritableComputedOptions,
@@ -21,3 +27,5 @@ export {
   type ComputedSetter,
   type ComputedRef,
 } from "./computed";
+
+export { TriggerOpTypes } from "./operations";

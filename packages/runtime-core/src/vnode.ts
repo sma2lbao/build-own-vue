@@ -21,6 +21,7 @@ import {
   currentRenderingInstance,
   currentScopeId,
 } from "./component-render-context";
+import { callWithAsyncErrorHandling } from "./error-handling";
 
 export const Fragment = Symbol.for("v-fgt") as any as {
   __isFragment: true;
@@ -166,6 +167,8 @@ export type VNodeNormalizedChildren =
   | RawSlots
   | null;
 
+export const blockStack: (VNode[] | null)[] = [];
+
 export function normalizeChildren(vnode: VNode, children: unknown) {}
 
 const normalizeKey = ({ key }: VNodeProps): VNode["key"] =>
@@ -245,15 +248,16 @@ export function cloneVNode<T, U>(
   return cloned;
 }
 
-export const createVNode = _createVNode;
+// export const createVNode = _createVNode;
 /** TODO: | ClassComponent | typeof NULL_DYNAMIC_COMPONENT */
-function _createVNode(
+/* @ts-ignore */
+export function createVNode(
   type: VNodeTypes,
   props: (Data & VNodeProps) | null = null,
-  children: unknown = null,
-  patchFlag: number = 0,
-  dynamicProps: string[] | null = null,
-  isBlockNode: false
+  children?: unknown = null,
+  patchFlag?: number = 0,
+  dynamicProps?: string[] | null = null,
+  isBlockNode?: false
 ): VNode {
   if (!type) {
     type = Comment;
@@ -397,4 +401,32 @@ export function mergeProps(...args: (Data & VNodeProps)[]) {
 
 export function isSameVNodeType(n1: VNode, n2: VNode): boolean {
   return n1.type === n2.type && n1.key === n2.key;
+}
+
+export function cloneIfMounted(child: VNode): VNode {
+  return (child.el === null && child.patchFlag !== PatchFlags.HOISTED) ||
+    child.memo
+    ? child
+    : cloneVNode(child);
+}
+
+export function normalizeVNode(child: VNodeChild): VNode {
+  if (child == null || typeof child === "boolean") {
+    return createVNode(Comment);
+  } else if (isArray(child)) {
+    return createVNode(Fragment, null, child.slice());
+  } else if (typeof child === "object") {
+    return cloneIfMounted(child);
+  } else {
+    return createVNode(Text, null, String(child));
+  }
+}
+
+export function invokeVNodeHook(
+  hook: VNodeHook,
+  instance: ComponentInternalInstance | null,
+  vnode: VNode,
+  prevVNode: VNode | null = null
+) {
+  callWithAsyncErrorHandling(hook, instance, "", [vnode, prevVNode]);
 }

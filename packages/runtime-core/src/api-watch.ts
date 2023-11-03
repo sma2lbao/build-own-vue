@@ -4,6 +4,7 @@ import {
   EffectScheduler,
   ReactiveEffect,
   Ref,
+  getCurrentScope,
   isReactive,
   isRef,
 } from "@ovue/reactivity";
@@ -19,6 +20,7 @@ import {
 } from "@ovue/shared";
 import { SchedulerJob, queueJob, queuePostFlushCb } from "./scheduler";
 import { ReactiveFlags, isShallow } from "packages/reactivity/src/reactive";
+import { currentInstance } from "./component";
 
 export type WatchEffect = (onCleanup: OnCleanup) => void;
 
@@ -222,7 +224,7 @@ function doWatch(
   if (flush === "sync") {
     scheduler = job as any;
   } else if (flush === "post") {
-    scheduler = () => queuePostFlushCb(job, instance && instance.suspense);
+    scheduler = () => queuePostFlushCb(job);
   } else {
     job.pre = true;
     if (instance) job.id = instance.uid;

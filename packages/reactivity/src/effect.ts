@@ -317,3 +317,14 @@ export function track(target: object, type: TrackOpTypes, key: unknown) {
     trackEffects(dep, undefined);
   }
 }
+
+const trackStack: boolean[] = [];
+export function pauseTracking() {
+  trackStack.push(shouldTrack);
+  shouldTrack = false;
+}
+
+export function resetTracking() {
+  const last = trackStack.pop();
+  shouldTrack = last === undefined ? true : last;
+}

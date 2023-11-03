@@ -1,4 +1,4 @@
-import { IfAny, ShapeFlags } from "@ovue/shared";
+import { EMPTY_OBJ, IfAny, ShapeFlags } from "@ovue/shared";
 import { EmitFn, EmitsOptions } from "./component-emits";
 import {
   ComponentOptions,
@@ -11,7 +11,15 @@ import {
 } from "./component-public-instance";
 import { VNode } from "./vnode";
 import { SlotsType } from "./component-slots";
-import { ComponentPropsOptions } from "./component-props";
+import { ComponentPropsOptions, initProps } from "./component-props";
+import { createAppContext } from "./api-create-app";
+import { EffectScope } from "packages/reactivity/src/effect-scope";
+
+type GlobalInstanceSetter = ((
+  instance: ComponentInternalInstance | null
+) => void) & { version?: string };
+
+let internalSetCurrentInstance: GlobalInstanceSetter;
 
 export type Data = Record<string, unknown>;
 
@@ -130,3 +138,126 @@ export function getExposeProxy(instance: ComponentInternalInstance) {
     );
   }
 }
+
+const emptyAppContext = createAppContext();
+
+let uid = 0;
+
+export function createComponentInstance(
+  vnode: VNode,
+  parent: ComponentInternalInstance | null,
+  suspense: null
+) {
+  const type = vnode.type as ConcreteComponent;
+  const appContext =
+    (parent ? parent.appContext : vnode.appContext) || emptyAppContext;
+
+  const instance: ComponentInternalInstance = {
+    uid: uid++,
+    vnode,
+    type,
+    parent,
+    appContext,
+    root: null!,
+    next: null,
+    subTree: null!,
+    effect: null,
+    update: null,
+    scope: new EffectScope(true),
+    render: null,
+    proxy: null,
+    exposed: null,
+    exposeProxy: null,
+    withProxy: null,
+    provides: parent ? parent.provides : Object.create(appContext.provides),
+    accessCache: null!,
+    renderCache: [],
+
+    components: null,
+    directives: null,
+
+    // propsOptions: normalizePropsOptions(type, appContext),
+    // emitsOptions: normalizeEmitsOptions(type, appContext),
+
+    emit: null!,
+    emitted: null,
+
+    propsDefaults: EMPTY_OBJ,
+
+    // inheritAttrs: type.inheritAttrs,
+
+    ctx: EMPTY_OBJ,
+    data: EMPTY_OBJ,
+    props: EMPTY_OBJ,
+    attrs: EMPTY_OBJ,
+    slots: EMPTY_OBJ,
+    refs: EMPTY_OBJ,
+    setupState: EMPTY_OBJ,
+    setupContext: null,
+
+    attrsProxy: null,
+    slotsProxy: null,
+
+    suspense,
+    // suspenseId: suspense ? suspense.pendingId : 0,
+    asyncDep: null,
+    asyncResolved: false,
+
+    isMounted: false,
+    isUnmounted: false,
+    isDeactivated: false,
+    bc: null,
+    c: null,
+    bm: null,
+    m: null,
+    bu: null,
+    u: null,
+    um: null,
+    bum: null,
+    da: null,
+    a: null,
+    rtg: null,
+    rtc: null,
+    ec: null,
+    sp: null,
+  };
+
+  instance.ctx = { _: instance };
+
+  instance.root = parent ? parent.root : instance;
+  // instance.emit = emit.bind(null, instance);
+
+  if (vnode.ce) {
+    vnode.ce(instance);
+  }
+
+  return instance;
+}
+
+export let isInSSRComponentSetup = false;
+
+export function setupComponent(instance: ComponentInternalInstance) {
+  const { props, children } = instance.vnode;
+  const isStateful = isStatefulComponent(instance);
+  initProps(instance, props, isStateful);
+  // initSlots(instance, children);
+
+  const setupResult = isStateful ? setupStatefulComponent(instance) : undefined;
+  return setupResult;
+}
+
+function setupStatefulComponent(instance: ComponentInternalInstance) {
+  const Component = instance.type as ComponentOptions;
+}
+
+export let currentInstance: ComponentInternalInstance | null = null;
+
+export const setCurrentInstance = (instance: ComponentInternalInstance) => {
+  internalSetCurrentInstance(instance);
+  instance.scope.on();
+};
+
+export const unsetCurrentInstance = () => {
+  currentInstance && currentInstance.scope.off();
+  internalSetCurrentInstance(null);
+};

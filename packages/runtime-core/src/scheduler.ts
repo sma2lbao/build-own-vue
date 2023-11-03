@@ -84,6 +84,13 @@ export function queueJob(job: SchedulerJob) {
   }
 }
 
+export function invalidateJob(job: SchedulerJob) {
+  const i = queue.indexOf(job);
+  if (i > flushIndex) {
+    queue.splice(i, 1);
+  }
+}
+
 export function flushPreFlushCbs(
   seen?: CountMap,
   i = isFlushing ? flushIndex : 0
