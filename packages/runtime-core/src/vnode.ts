@@ -93,7 +93,9 @@ export interface VNode<
 
   ssFallback: VNode | null;
 
+  // 节点标记
   shapeFlag: number;
+  // 优化标记
   patchFlag: number;
 
   dynamicProps: string[] | null;
@@ -122,9 +124,10 @@ type VNodeChildAtom =
   | undefined
   | void;
 
-export type VNodeArrayChildren = Array<VNodeArrayChildren | VNodeChildAtom>;
-
+// 子节点
 export type VNodeChild = VNodeChildAtom | VNodeArrayChildren;
+
+export type VNodeArrayChildren = Array<VNodeArrayChildren | VNodeChildAtom>;
 
 export type VNodeNormalizedRefAtom = {
   i: ComponentInternalInstance;
@@ -250,10 +253,10 @@ export function cloneVNode<T, U>(
 
 // export const createVNode = _createVNode;
 /** TODO: | ClassComponent | typeof NULL_DYNAMIC_COMPONENT */
-/* @ts-ignore */
 export function createVNode(
   type: VNodeTypes,
   props: (Data & VNodeProps) | null = null,
+  // @ts-ignore
   children?: unknown = null,
   patchFlag?: number = 0,
   dynamicProps?: string[] | null = null,

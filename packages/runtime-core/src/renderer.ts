@@ -1320,6 +1320,7 @@ function baseCreateRenderer(
   };
 }
 
+// 最长序列
 function getSequence(arr: number[]): number[] {
   const p = arr.slice();
   const result = [0];

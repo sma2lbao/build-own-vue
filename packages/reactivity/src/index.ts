@@ -19,7 +19,7 @@ export {
   resetTracking,
 } from "./effect";
 
-export { getCurrentScope } from "./effect-scope";
+export { getCurrentScope, EffectScope } from "./effect-scope";
 
 export {
   type WritableComputedOptions,

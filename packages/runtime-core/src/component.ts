@@ -13,7 +13,7 @@ import { VNode } from "./vnode";
 import { SlotsType } from "./component-slots";
 import { ComponentPropsOptions, initProps } from "./component-props";
 import { createAppContext } from "./api-create-app";
-import { EffectScope } from "packages/reactivity/src/effect-scope";
+import { EffectScope } from "@ovue/reactivity";
 
 type GlobalInstanceSetter = ((
   instance: ComponentInternalInstance | null

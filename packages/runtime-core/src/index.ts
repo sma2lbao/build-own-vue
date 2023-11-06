@@ -17,4 +17,8 @@ export {
 
 export * from "./renderer";
 
+export * from "./component";
+
+export * from "./error-handling";
+
 export const version = "1.0.0";

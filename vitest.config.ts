@@ -26,7 +26,7 @@ export default defineConfig({
     threads: !process.env.GITHUB_ACTIONS,
     setupFiles: "scripts/setup-vitest.ts",
     environmentMatchGlobs: [
-      // ["packages/{vue,vue-compat,runtime-dom}/**", "jsdom"],
+      ["packages/{vue,vue-compat,runtime-dom}/**", "jsdom"],
     ],
     sequence: {
       hooks: "list",

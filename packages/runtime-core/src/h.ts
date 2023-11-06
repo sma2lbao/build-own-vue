@@ -8,7 +8,6 @@ import {
   isVNode,
 } from "./vnode";
 import { RawSlots } from "./component-slots";
-import { EmitsOptions } from "./component-emits";
 import { Component, ConcreteComponent } from "./component";
 import { ComponentOptions } from "./component-options";
 

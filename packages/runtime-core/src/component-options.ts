@@ -116,6 +116,8 @@ export interface ComponentOptionsBase<
   ) => Promise<RawBindings> | RawBindings | RenderFunction | void;
   name?: string;
   template?: string | object;
+  render?: Function;
+  components?: Record<string, Component>;
 }
 
 type MergedHook<T = () => void> = T | T[];

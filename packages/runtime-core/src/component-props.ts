@@ -134,7 +134,8 @@ export function initProps(
   }
 
   if (isStateful) {
-    instance.props = shallowReactive(props);
+    // instance.props = shallowReactive(props);
+    console.log("未实现shallow-reactive");
   } else {
     if (!instance.type.props) {
       instance.props = attrs;

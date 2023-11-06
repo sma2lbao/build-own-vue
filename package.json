@@ -4,12 +4,14 @@
 	},
 	"devDependencies": {
 		"@types/node": "^20.8.3",
-		"vite": "^4.4.11",
+		"jsdom": "^22.1.0",
 		"typescript": "^5.2.2",
+		"vite": "^4.4.11",
 		"vitest": "^0.34.6"
 	},
 	"dependencies": {
 		"@ovue/reactivity": "workspace:^",
+		"@ovue/runtime-core": "workspace:^",
 		"@ovue/shared": "workspace:^"
 	}
 }

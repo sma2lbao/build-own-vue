@@ -22,7 +22,7 @@ export function callWithAsyncErrorHandling(
   fn: Function | Function[],
   instance: ComponentInternalInstance | null,
   type: ErrorTypes,
-  args?: unknown
+  args?: unknown[]
 ): any[] {
   if (isFunction(fn)) {
     const res = callWithErrorHandling(fn, instance, type, args);
