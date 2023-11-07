@@ -1,4 +1,4 @@
-import { markRaw } from "vue";
+import { markRaw } from "@ovue/reactivity";
 
 export const enum TestNodeTypes {
   TEXT = "text",

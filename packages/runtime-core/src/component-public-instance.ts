@@ -1,4 +1,4 @@
-import { Prettify } from "@ovue/shared";
+import { NOOP, Prettify, extend } from "@ovue/shared";
 import { WatchOptions, WatchStopHandle } from "./api-watch";
 import {
   ComponentInternalInstance,
@@ -17,7 +17,7 @@ import {
   MethodOptions,
 } from "./component-options";
 import { SlotsType, UnwrapSlotsType } from "./component-slots";
-import { nextTick } from "./scheduler";
+import { nextTick, queueJob } from "./scheduler";
 import { ShallowUnwrapRef, UnwrapNestedRefs } from "@ovue/reactivity";
 
 export interface ComponentCustomProperties {}
@@ -88,6 +88,11 @@ export type ComponentPublicInstance<
   ComponentCustomProperties &
   InjectToObject<I>;
 
+export type PublicPropertiesMap = Record<
+  string,
+  (i: ComponentInternalInstance) => any
+>;
+
 const getPublicInstance = (
   i: ComponentInternalInstance | null
 ): ComponentPublicInstance | ComponentInternalInstance["exposed"] | null => {
@@ -95,3 +100,23 @@ const getPublicInstance = (
   if (isStatefulComponent(i)) return getExposeProxy(i) || i.proxy;
   return getPublicInstance(i.parent);
 };
+
+export const publicPropertiesMap: PublicPropertiesMap = extend(
+  Object.create(null),
+  {
+    $: (i) => i,
+    $el: (i) => i.vnode.el,
+    $data: (i) => i.data,
+    $props: (i) => i.props,
+    $attrs: (i) => i.attrs,
+    $slots: (i) => i.slots,
+    $refs: (i) => i.refs,
+    $parent: (i) => getPublicInstance(i.parent),
+    $root: (i) => getPublicInstance(i.root),
+    $emit: (i) => i.emit,
+    $options: (i) => i.type,
+    $forceUpdate: (i) => i.f || (i.f = () => queueJob(i.update)),
+    $nextTick: (i) => i.n || (i.n = nextTick.bind(i.proxy!)),
+    $watch: (i) => NOOP,
+  } as PublicPropertiesMap
+);

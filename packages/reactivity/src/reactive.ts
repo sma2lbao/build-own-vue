@@ -1,6 +1,8 @@
-import { isObject, toRawType } from "@ovue/shared";
+import { def, isObject, toRawType } from "@ovue/shared";
 import { mutableHandlers } from "./base-handlers";
-import { Ref, UnwrapRefSimple } from "./ref";
+import { RawSymbol, Ref, UnwrapRefSimple } from "./ref";
+
+export type Raw<T> = T & { [RawSymbol]?: true };
 
 // Reactive对象标记位 在 get 中会拦截返回值
 export const enum ReactiveFlags {
@@ -143,4 +145,9 @@ export function isReactive(value: unknown): boolean {
 
 export function isProxy(value: unknown): boolean {
   return isReactive(value) || isReadonly(value);
+}
+
+export function markRaw<T extends object>(value: T): Raw<T> {
+  def(value, ReactiveFlags.SKIP, true);
+  return value;
 }

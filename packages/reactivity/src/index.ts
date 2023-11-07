@@ -5,10 +5,11 @@ export {
   reactive,
   isProxy,
   toRaw,
+  markRaw,
   type UnwrapNestedRefs,
 } from "./reactive";
 
-export { type Ref, type ShallowUnwrapRef, isRef } from "./ref";
+export { type Ref, type ShallowUnwrapRef, isRef, proxyRefs } from "./ref";
 
 export {
   type DebuggerOptions,

@@ -1,4 +1,10 @@
-import { nodeOps, TestElement } from "@ovue/runtime-test";
+import { h } from "@ovue/runtime-core";
+import {
+  render,
+  nodeOps,
+  TestElement,
+  serializeInner as inner,
+} from "@ovue/runtime-test";
 
 describe("renderer: element", () => {
   let root: TestElement;
@@ -7,10 +13,10 @@ describe("renderer: element", () => {
     root = nodeOps.createElement("div");
   });
 
-  // it("should create an element", () => {
-  //   render(h("div"), root);
-  //   expect(inner(root)).toBe("<div></div>");
-  // });
+  it("should create an element", () => {
+    render(h("div"), root);
+    expect(inner(root)).toBe("<div></div>");
+  });
 
   // it("should create an element with props", () => {
   //   render(h("div", { id: "foo", class: "bar" }), root);

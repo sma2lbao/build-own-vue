@@ -8,12 +8,13 @@ import {
 import {
   ComponentPublicInstance,
   ComponentPublicInstanceConstructor,
+  publicPropertiesMap,
 } from "./component-public-instance";
 import { VNode } from "./vnode";
 import { SlotsType } from "./component-slots";
 import { ComponentPropsOptions, initProps } from "./component-props";
 import { createAppContext } from "./api-create-app";
-import { EffectScope } from "@ovue/reactivity";
+import { EffectScope, markRaw, proxyRefs } from "@ovue/reactivity";
 
 type GlobalInstanceSetter = ((
   instance: ComponentInternalInstance | null
@@ -109,7 +110,7 @@ export type SetupContext<
 > = E extends any
   ? {
       attrs: Data;
-      slots: UnwrapSlotsTypes<S>;
+      // slots: UnwrapSlotsTypes<S>;
       emit: EmitFn<E>;
       expose: (exposed?: Record<string, any>) => void;
     }
