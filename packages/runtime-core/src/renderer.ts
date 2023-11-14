@@ -266,6 +266,7 @@ function baseCreateRenderer(
 ): any {
   const target = getGlobalThis();
   const {
+    remove: hostRemove,
     patchProp: hostPatchProp,
     nextSibling: hostNextSibling,
     insert: hostInsert,
@@ -459,7 +460,7 @@ function baseCreateRenderer(
     }
   };
 
-  // 比对原生组件
+  // 更新比对原生组件
   const patchElement = (
     n1: VNode,
     n2: VNode,
@@ -470,7 +471,8 @@ function baseCreateRenderer(
     optimized: boolean
   ) => {
     const el = (n2.el = n1.el!);
-    let { patchFlag, dynamicChildren, dirs } = n2;
+    // TODO dirs
+    let { patchFlag, dynamicChildren } = n2;
 
     patchFlag |= n1.patchFlag & PatchFlags.FULL_PROPS;
     const oldProps = n1.props || EMPTY_OBJ;
@@ -501,6 +503,7 @@ function baseCreateRenderer(
       );
     }
     if (patchFlag > 0) {
+      // flag 大于 0; 即存在更新
       if (patchFlag & PatchFlags.FULL_PROPS) {
         // element props 存在 动态的 keys, 需要全diff
         patchProps(
@@ -515,9 +518,14 @@ function baseCreateRenderer(
       } else {
         // element 存在动态 class 绑定
         if (patchFlag & PatchFlags.CLASS) {
-          // TODO
+          if (oldProps.class !== newProps.class) {
+            hostPatchProp(el, "class", null, newProps.class, isSVG);
+          }
         }
-        // TODO style
+        // style 存在动态 style 绑定
+        if (patchFlag & PatchFlags.STYLE) {
+          hostPatchProp(el, "style", oldProps.style, newProps.style, isSVG);
+        }
 
         // props
         if (patchFlag & PatchFlags.PROPS) {
@@ -562,16 +570,16 @@ function baseCreateRenderer(
       );
     }
 
-    if ((vnodeHook = newProps.onVnodeBeforeUpdate) || dirs) {
+    if ((vnodeHook = newProps.onVnodeBeforeUpdate)) {
       queuePostFlushCb(() => {
         vnodeHook && invokeVNodeHook(vnodeHook, parentComponent, n1, n2);
       });
     }
   };
 
-  // 渲染原生节点
+  // 首次渲染原生节点
   const mountElement = (
-    vnode: VNode,
+    vnode: VNode, // h函数生成的 vnode
     container: RendererElement,
     anchor: RendererNode | null,
     parentComponent: ComponentInternalInstance | null,
@@ -583,7 +591,10 @@ function baseCreateRenderer(
     let el: RendererElement;
     let vnodeHook: VNodeHook | undefined | null;
     const { type, props, shapeFlag } = vnode;
-
+    // 通过 runtime-dom 传入的createElement的方法生成 dom。
+    // vue 和 react 平台隔离方式的区别
+    // react是通过内部全局对象来隔离原生
+    // vue 是通过传参的方式隔离
     el = vnode.el = hostCreateElement(
       vnode.type as string,
       isSVG,
@@ -604,6 +615,31 @@ function baseCreateRenderer(
         slotScopeIds,
         optimized
       );
+    }
+
+    // 将props设置到dom上
+    if (props) {
+      for (const key in props) {
+        if (key !== "value" && !isReservedProp(key)) {
+          hostPatchProp(
+            el,
+            key,
+            null,
+            props[key],
+            isSVG,
+            vnode.children as VNode[],
+            parentComponent,
+            parentSuspense,
+            unmountChildren
+          );
+        }
+        // 特殊处理 : 属性顺序问题
+        // - 如 <input type="range" value="500" min="0" max="1000" />
+        // 反例： 初始值 期望：500 实际：100
+        if ("value" in props) {
+          hostPatchProp(el, "value", null, props.value);
+        }
+      }
     }
 
     hostInsert(el, container, anchor);
@@ -781,10 +817,45 @@ function baseCreateRenderer(
     // TODO deactivate HOOK
 
     if (shapeFlag & ShapeFlags.COMPONENT) {
+      // 组件类型
       unmountComponent(vnode.component!, parentSuspense, doRemove);
     } else {
-      // TODO
+      // TODO suspense dirs teleport
+      if (
+        dynamicChildren &&
+        (type !== Fragment ||
+          (patchFlag > 0 && patchFlag & PatchFlags.STABLE_FRAGMENT))
+      ) {
+        unmountChildren(
+          dynamicChildren,
+          parentComponent,
+          parentSuspense,
+          false,
+          true
+        );
+      } else if (
+        (type === Fragment &&
+          patchFlag &
+            (PatchFlags.KEYED_FRAGMENT | PatchFlags.UNKEYED_FRAGMENT)) ||
+        (!optimized && shapeFlag & ShapeFlags.ARRAY_CHILDREN)
+      ) {
+        unmountChildren(children as VNode[], parentComponent, parentSuspense);
+      }
+
+      if (doRemove) {
+        remove(vnode);
+      }
     }
+  };
+
+  // 卸载VNode
+  const remove: RemoveFn = (vnode) => {
+    const { type, el, anchor } = vnode;
+    const performRemove = () => {
+      hostRemove(el!);
+      // TODO transition
+    };
+    performRemove();
   };
 
   // 卸载组件
