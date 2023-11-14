@@ -97,9 +97,11 @@ export interface AppContext {
   directives: Record<string, Directive>;
   provides: Record<string | symbol, any>;
 
-  // optionsCache: WeakMap<ComponentOptions, MergedComponentOptions>;
+  optionsCache: WeakMap<ComponentOptions, any>;
 
-  // propsCache: WeakMap<ConcreteComponent, NormalizedPropsOptions>;
+  propsCache: WeakMap<ConcreteComponent, any>;
+
+  emitsCache: WeakMap<ConcreteComponent, any>;
 
   // TODO
 
@@ -217,8 +219,8 @@ export function createAppContext(): AppContext {
     components: {},
     directives: {},
     provides: Object.create(null),
-    // optionsCache: new WeakMap(),
-    // propsCache: new WeakMap(),
-    // emitsCache: new WeakMap(),
+    optionsCache: new WeakMap(),
+    propsCache: new WeakMap(),
+    emitsCache: new WeakMap(),
   };
 }

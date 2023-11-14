@@ -20,6 +20,7 @@ import {
   Fragment,
   Static,
   Text,
+  Comment,
   VNode,
   VNodeArrayChildren,
   VNodeHook,
@@ -604,6 +605,8 @@ function baseCreateRenderer(
         optimized
       );
     }
+
+    hostInsert(el, container, anchor);
   };
 
   // 渲染 vue 组件
@@ -1322,31 +1325,36 @@ function baseCreateRenderer(
 
 // 最长序列
 function getSequence(arr: number[]): number[] {
+  // 复制 arr 数组
   const p = arr.slice();
-  const result = [0];
+  const result = [0]; // 存放的是 arr 的下标
   let i, j, u, v, c;
   const len = arr.length;
   for (i = 0; i < len; i++) {
     const arrI = arr[i];
     if (arrI !== 0) {
-      j = result[result.length - 1];
+      j = result[result.length - 1]; // 下标数组 result 最后一个的下标
       if (arr[j] < arrI) {
-        p[i] = j;
-        result.push(i);
+        // 如果当前的值 大于 下标组最后一个下标对应的值
+        p[i] = j; // 把 下标数组 result 的最后一个下标 赋值给 数组 p 的 当前 i 位置
+        result.push(i); // 并把当前 i 下标推入到 result 中
         continue;
       }
-
+      // 如果当前的值 小于或等于 下标组最后一个下标对应的值
       u = 0;
-      v = result.length - 1;
+      v = result.length - 1; // 下标组最后一个下标的索引
       while (u < v) {
-        c = (u + v) >> 1;
+        c = (u + v) >> 1; // 未运算，等同于除2；即 u -> v 的中位数
         if (arr[result[c]] < arrI) {
+          // 当前的值 大于 中位数对应下标的arr的值；意味着需要比较后半段的坐标对应的值
           u = c + 1;
         } else {
+          // 否则比较前半段的坐标对应值
           v = c;
         }
       }
       if (arrI < arr[result[u]]) {
+        // 当前值小于 找到的最终坐标对应的值
         if (u > 0) {
           p[i] = result[u - 1];
         }

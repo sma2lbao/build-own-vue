@@ -1,5 +1,5 @@
-import { h } from "@ovue/runtime-core";
 import {
+  h,
   render,
   nodeOps,
   TestElement,

@@ -26,3 +26,4 @@ export function renderToString(vnode: VNode) {
 export * from "./trigger-event";
 export * from "./serialize";
 export * from "./node-ops";
+export * from "@ovue/runtime-core";

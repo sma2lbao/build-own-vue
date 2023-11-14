@@ -8,6 +8,7 @@ import { DirectiveBinding } from "./directives";
 import {
   PatchFlags,
   ShapeFlags,
+  SlotFlags,
   extend,
   isArray,
   isFunction,
@@ -172,7 +173,59 @@ export type VNodeNormalizedChildren =
 
 export const blockStack: (VNode[] | null)[] = [];
 
-export function normalizeChildren(vnode: VNode, children: unknown) {}
+export function normalizeChildren(vnode: VNode, children: unknown) {
+  let type = 0;
+  const { shapeFlag } = vnode;
+  if (children == null) {
+    children = null;
+  } else if (isArray(children)) {
+    type = ShapeFlags.ARRAY_CHILDREN;
+  } else if (typeof children === "object") {
+    if (shapeFlag & (ShapeFlags.ELEMENT | ShapeFlags.TELEPORT)) {
+      const slot = (children as any).default;
+      if (slot) {
+        slot._c && (slot._d = false);
+        normalizeChildren(vnode, slot());
+        slot._c && (slot._d = true);
+      }
+      return;
+    } else {
+      type = ShapeFlags.SLOTS_CHILDREN;
+      const slotFlag = (children as RawSlots)._;
+      if (!slotFlag && !(InternalObjectKey in children!)) {
+        (children as RawSlots)._ctx = currentRenderingInstance;
+      } else if (slotFlag === SlotFlags.FORWARDED && currentRenderingInstance) {
+        if (
+          (currentRenderingInstance.slots as RawSlots)._ === SlotFlags.STABLE
+        ) {
+          (children as RawSlots)._ = SlotFlags.STABLE;
+        } else {
+          (children as RawSlots)._ = SlotFlags.DYNAMIC;
+          vnode.patchFlag |= PatchFlags.DYNAMIC_SLOTS;
+        }
+      }
+    }
+  } else if (isFunction(children)) {
+    children = { default: children, _ctx: currentRenderingInstance };
+    type = ShapeFlags.SLOTS_CHILDREN;
+  } else {
+    children = String(children);
+
+    if (shapeFlag & ShapeFlags.TELEPORT) {
+      type = ShapeFlags.ARRAY_CHILDREN;
+      children = [createTextVnode(children as string)];
+    } else {
+      type = ShapeFlags.TEXT_CHILDREN;
+    }
+  }
+
+  vnode.children = children as VNodeNormalizedChildren;
+  vnode.shapeFlag |= type;
+}
+
+export function createTextVnode(text: string = " ", flag: number = 0): VNode {
+  return createVNode(Text, null, text, flag);
+}
 
 const normalizeKey = ({ key }: VNodeProps): VNode["key"] =>
   key != null ? key : null;

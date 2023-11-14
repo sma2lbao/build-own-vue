@@ -1,4 +1,5 @@
 import { EMPTY_OBJ, IfAny, ShapeFlags } from "@ovue/shared";
+import { createAppContext } from "./api-create-app";
 import { EmitFn, EmitsOptions } from "./component-emits";
 import {
   ComponentOptions,
@@ -13,9 +14,8 @@ import {
 import { VNode } from "./vnode";
 import { SlotsType } from "./component-slots";
 import { ComponentPropsOptions, initProps } from "./component-props";
-import { createAppContext } from "./api-create-app";
-import { EffectScope, markRaw, proxyRefs } from "@ovue/reactivity";
 
+import { EffectScope, markRaw, proxyRefs } from "@ovue/reactivity";
 type GlobalInstanceSetter = ((
   instance: ComponentInternalInstance | null
 ) => void) & { version?: string };
@@ -140,7 +140,7 @@ export function getExposeProxy(instance: ComponentInternalInstance) {
   }
 }
 
-const emptyAppContext = createAppContext();
+const emptyAppContext = createAppContext?.();
 
 let uid = 0;
 
